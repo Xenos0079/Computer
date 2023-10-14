@@ -13,3 +13,6 @@ if signal_1 is float:
 if signal_1 is str:
     print("You have entered a string.")
     print(type(signal_1))
+
+# some comments:
+# don't use "space" to name the file
