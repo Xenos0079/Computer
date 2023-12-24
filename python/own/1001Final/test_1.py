@@ -1,7 +1,7 @@
-#'''
+'''
 a = (1,2,3,4)
 print(a[1:-1])
-#'''
+'''
 '''
 class Animal:
     def __getinfo(self):
@@ -86,8 +86,7 @@ a.printStudent()
 b.printStudent()
 print(isinstance(b , Student))
 print(isinstance(a , GraduateStudent))
-'''
-
+'''  
 
 
 
