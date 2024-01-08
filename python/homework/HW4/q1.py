@@ -22,24 +22,28 @@ class SinglyLinkedList:
         self.tail = None
         self.size = 0
 
-    #def insert(self, data):
+    def insert(self, data):
         # Start writing your code.
-
+        node = Node(data , None)
+        node.pointer = self.head
+        self.head = node
+        self.size = self.size+1
         # End writing your code.
-    
-    
+
     ## Here you can write some other functions inside the class if needed, or you can igore this block.
     # Start writing your code.
-
+        
     # End writing your code.
 
-
-
-#def count_node(node):
-    # start writing your code.
-
-    # end writing your code.
-
+def count_node(node):
+     # Start writing your code.
+    if node.pointer != None: # if pointer exists
+        return count_node(node.pointer) + 1 # recursion
+    elif node != None: # pointer not exist but node exists
+        return 1 # return 1
+    else: # node == None
+        return None # None
+    # End writing your code.
 
 # We will write code as follows to check your answer. You can remain or delete the following code in the submission. Because the following code will be rewritten when checking your answer.
 #'''
@@ -50,5 +54,5 @@ if __name__ == '__main__':
         test_list.insert(num)
     first_node = test_list.head  # Get the first node of the linked list.
     print('The number of nodes in test_list is:')
-    #print(count_node(first_node))
+    print(count_node(first_node))
 #'''
