@@ -20,7 +20,12 @@ def prompt_player_input():
 
 def generate_puzzle():
     puzzle = list(range(1, 9)) + [None]
-    random.shuffle(puzzle)
+    auto = 0
+    while auto < 100:
+        ran_num = random.randint(0, 3)
+        make_move(puzzle, ran_num)
+        auto += 1
+    #random.shuffle(puzzle)
     return puzzle
     # Generate a randomized, SOLVABLE 8-tile puzzle
 
@@ -29,18 +34,27 @@ def display_puzzle(puzzle):
         print(" ".join(str(x) if x is not None else " " for x in puzzle[i:i+3]))
     # Display the puzzle on the screen in a simple text format
 
-def make_move(puzzle, move, moves):
+#def make_move(puzzle, move, moves):
+#def get_dir(move, moves):
+    #empty_index = puzzle.index(None)
+    #dir = moves.index(move)
+    
+def make_move(puzzle, dir):
     empty_index = puzzle.index(None)
-    if move == moves[1]:# right
+    #if move == moves[1]:# right
+    if dir == 1:
         if empty_index % 3 > 0:
             puzzle[empty_index], puzzle[empty_index - 1] = puzzle[empty_index - 1], puzzle[empty_index]
-    elif move == moves[0]:# left
+    #elif move == moves[0]:# left
+    elif dir == 0:
         if empty_index % 3 < 2:
             puzzle[empty_index], puzzle[empty_index + 1] = puzzle[empty_index + 1], puzzle[empty_index]
-    elif move == moves[3]: # down
+    #elif move == moves[3]: # down
+    elif dir == 3:
         if empty_index >= 3:
             puzzle[empty_index], puzzle[empty_index - 3] = puzzle[empty_index - 3], puzzle[empty_index]
-    elif move == moves[2]: # up
+    #elif move == moves[2]: # up
+    elif dir == 2:
         if empty_index < 6:
             puzzle[empty_index], puzzle[empty_index + 3] = puzzle[empty_index + 3], puzzle[empty_index]
     else:
@@ -57,7 +71,9 @@ def main():
     display_puzzle(puzzle)
     while not is_solved(puzzle):
         move = input("Enter your move: ").strip().lower()
-        make_move(puzzle, move, moves)
+        dir = moves.index(move)
+        #make_move(puzzle, move, moves)
+        make_move(puzzle, dir)
         display_puzzle(puzzle)
     print("Congratulations! You solved the puzzle!")
     play_again = input("Enter 'n' for another game, or 'q' to end the game: ").strip().lower()
