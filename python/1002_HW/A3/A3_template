@@ -1,0 +1,269 @@
+'''
+A snake template used to illustrate using stamp()
+to simulate tail extension and movement.
+
+Number 1 to 5 are binded to a function consume_food()
+which simply increases the size of the snake.
+
+
+'''
+import turtle
+import random
+from functools import partial
+
+g_screen = None
+g_snake = None     # snake's head
+g_monster = None
+g_snake_sz = 1     # size of the snake's tail
+g_intro = None
+g_key_pressed = None
+g_status = None
+
+COLOR_BODY = ("blue", "black")
+COLOR_HEAD = "red"
+COLOR_MONSTER = "purple"
+FONT_INTRO = ("Arial",16,"normal")
+FONT_STATUS = ("Arial",20,"normal")
+TIMER_SNAKE = 300   # refresh rate for snake
+SZ_SQUARE = 20      # square size in pixels
+
+DIM_PLAY_AREA = 500
+DIM_STAT_AREA = 40 # !!! multiple of 40
+DIM_MARGIN = 30
+
+KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_SPACE = \
+       "Up", "Down", "Left", "Right", "space"
+
+HEADING_BY_KEY = {KEY_UP:90, KEY_DOWN:270, KEY_LEFT:180, KEY_RIGHT:0}
+
+def create_turtle(x, y, color="red", border="black"):
+    """
+    Creates a new turtle object with the specified position, color, and border.
+    
+    Args:
+        x (int): The x-coordinate of the turtle's initial position.
+        y (int): The y-coordinate of the turtle's initial position.
+        color (str, optional): The color of the turtle's body. Defaults to "red".
+        border (str, optional): The color of the turtle's border. Defaults to "black".
+    
+    Returns:
+        turtle.Turtle: The newly created turtle object.
+    """
+    t = turtle.Turtle("square")
+    t.color(border, color)
+    t.up()
+    t.goto(x,y)
+    return t
+
+def configure_play_area():
+    """
+    Configures the play area for the snake game, 
+    including the motion border, status border, 
+    introduction text, and status text.
+    The motion border and status border are based on square shape
+    resized according to the specified dimensions.
+
+    Returns:
+        tuples: A tuple containing the introduction text turtle and 
+        the status text turtle.
+    """
+
+    # motion border
+    m = create_turtle(0,0,"","black")
+    sz = DIM_PLAY_AREA//SZ_SQUARE
+    m.shapesize(sz, sz, 3)
+    m.goto(0,-DIM_STAT_AREA//2)  # shift down half the status
+
+    # status border
+    s = create_turtle(0,0,"","black")
+    sz_w, sz_h = DIM_STAT_AREA//SZ_SQUARE, DIM_PLAY_AREA//SZ_SQUARE
+    s.shapesize(sz_w, sz_h, 3)
+    s.goto(0,DIM_PLAY_AREA//2)  # shift up half the motion
+
+    # turtle to write introduction
+    intro = create_turtle(-200,0)
+    intro.hideturtle()
+    intro.write("Click anywhere to start the game .....\n\n" + \
+                "Use arrow keys to control the snake.\n\n" + \
+                "Press a number from 1 to 5 to extend the snake's tail.\n\n",  \
+                font=FONT_INTRO)
+
+    # turtle to write status
+    status = create_turtle(0,0,"","black")
+    status.hideturtle()
+    status.goto(-200,s.ycor()-10)
+
+    return intro, status
+
+def configure_screen():
+    """
+    Configures the Turtle screen for the snake game,
+    the screen width and height are calculated based 
+    on the play area, status bar and margin.
+    
+    Returns:
+        turtle.Screen: The configured Turtle screen.
+    """
+    s = turtle.Screen()
+    s.tracer(0)    # disable auto screen refresh, 0=disable, 1=enable
+    s.title("Snake by Kinley")
+    w = DIM_PLAY_AREA + DIM_MARGIN*2
+    h = DIM_PLAY_AREA + DIM_MARGIN*2 + DIM_STAT_AREA
+    s.setup(w, h)
+    s.mode("standard")
+    return s
+
+def update_status():
+    """
+    Updates the status display on the screen with 
+    the current key press and snake tail length.
+    """
+    g_status.clear()
+    status = f'Key-{g_key_pressed}    Tail length-{g_snake_sz}'
+    g_status.write(status, font=FONT_STATUS)
+    g_screen.update()
+
+def on_arrow_key_pressed(key):
+    """
+    Handles the user's arrow key press event and 
+    updates the global `g_key_pressed` variable with the pressed key. 
+    It then calls the `update_status()` function to update 
+    the status display on the screen.
+    
+    Args:
+        key (str): The key that was pressed, one of 'Up', 'Down', 'Left', or 'Right'.
+    """
+    global g_key_pressed
+    g_key_pressed = key
+    update_status()
+
+def on_timer_snake():
+    """
+    Advances the snake's movement on a timer. This function is called repeatedly 
+    by the Turtle screen's `ontimer` method to update the snake's position.
+    
+    If no key has been pressed, the function simply schedules itself to be called 
+    again after the `TIMER_SNAKE` interval. Otherwise, it performs the following steps:
+    
+    1. Clones the snake's head as a new body segment by setting the color to `COLOR_BODY` 
+        and stamping it on the screen.
+    2. Sets the snake's color back to `COLOR_HEAD`.
+    3. Advances the snake's position by setting the heading based 
+        on the last key pressed (`g_key_pressed`) and 
+        moving the snake forward by `SZ_SQUARE` units.
+    4. If the number of stamped segments exceeds the current snake size (`g_snake_sz`), 
+        removes the last segment by clearing the oldest stamp.
+    5. Updates the Turtle screen to reflect the changes.
+    6. Schedules the function to be called again after the `TIMER_SNAKE` interval.
+    """
+    if g_key_pressed is None:
+        g_screen.ontimer(on_timer_snake, TIMER_SNAKE)
+        return
+
+    # Clone the head as body
+    g_snake.color(*COLOR_BODY)
+    g_snake.stamp()
+    g_snake.color(COLOR_HEAD)
+
+    # Advance snake
+    g_snake.setheading( HEADING_BY_KEY[g_key_pressed] )
+    g_snake.forward(SZ_SQUARE)
+
+    # Shifting or extending the tail.
+    # Remove the last square on Shifting.
+    if len(g_snake.stampItems) > g_snake_sz:
+        g_snake.clearstamps(1)
+
+    g_screen.update()
+
+    g_screen.ontimer(on_timer_snake, TIMER_SNAKE)
+
+
+def on_timer_monster():
+    """
+    Advances the monster's movement on a timer. 
+    This function is called repeatedly 
+    by the Turtle screen's `ontimer` method to update the monster's position.
+    
+    The function performs the following steps:
+    
+    1. Calculates the heading for the monster to move towards the snake, 
+        snapping to the nearest 45-degree angle.
+    2. Sets the monster's heading to the calculated value.
+    3. Moves the monster forward by `SZ_SQUARE` units.
+    4. Updates the Turtle screen to reflect the changes.
+    5. Schedules the function to be called again after a random delay 
+        between `TIMER_SNAKE-50` and `TIMER_SNAKE+200` milliseconds.
+    """
+    angle = g_monster.towards(g_snake)
+    qtr = angle//45 # (0,1,2,3,4,5,6,7)
+    heading = qtr * 45 if qtr % 2 == 0 else (qtr+1) * 45
+
+    g_monster.setheading(heading)
+    g_monster.forward(SZ_SQUARE)
+
+    g_screen.update()
+    delay = random.randint(TIMER_SNAKE-50, TIMER_SNAKE+200)
+    g_screen.ontimer(on_timer_monster, delay)
+
+def consume_food(num):
+    """
+    Simulate the action when the snake consumes the given food item num.
+    Increase the length of the snake's tail by the given num value.
+    
+    Args:
+        num (int): The value of food item being consumed by the snake
+    
+    Modifies:
+        g_snake_sz (int): Increments the size of the snake's body by the specified number.
+        update_status(): Updates the game status display to reflect the new snake size.
+    """
+ 
+    global g_snake_sz
+    if g_snake_sz < 100:
+        g_snake_sz += num
+        update_status()
+
+def cb_start_game(x, y):
+    """
+    Starts the game by setting up the initial game state and event handlers.
+    
+    This function is called when the user clicks on the screen to start the game.
+    It performs the following steps:
+    
+    1. Clears the on-screen click handler to prevent further clicks from starting the game.
+    2. Clears the introductory message.
+    3. Registers key event handlers for the arrow keys to handle player movement.
+    4. Starts the timer-based updates for the snake and monster movements.
+    5. Registers key event handlers for consuming food items 1 through 5.
+    """
+    g_screen.onscreenclick(None)
+    g_intro.clear()
+
+    for key in (KEY_UP, KEY_DOWN, KEY_RIGHT, KEY_LEFT):
+        g_screen.onkey(partial(on_arrow_key_pressed,key), key)
+
+    for n in range(1,6):
+        g_screen.onkey(partial(consume_food,n), n)
+
+    on_timer_snake()
+    on_timer_monster()
+
+if __name__ == "__main__":
+    """
+    A small demo illustrating the main processing logic 
+    for a Snake game using Python Turtle graphics.
+    """
+    g_screen = configure_screen()
+    g_intro, g_status = configure_play_area()
+
+    update_status()
+
+    g_monster = create_turtle(-110,-110, COLOR_MONSTER, "black")
+    g_snake = create_turtle(0,0, COLOR_HEAD, "black")
+
+    g_screen.onscreenclick(cb_start_game) # set up a mouse-click call back
+
+    g_screen.update()
+    g_screen.listen()
+    g_screen.mainloop()
