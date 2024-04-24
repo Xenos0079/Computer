@@ -57,7 +57,7 @@ class Solution:
 '''
 
 
-#'''
+#''' the third edition: correct but slow
 class Solution:
     def majorityElement(self, nums) -> int:
         if not nums:
@@ -69,12 +69,11 @@ class Solution:
         for _ in nums:
             if _ not in memo:
                 memo[_] = 1
-            elif memo[_] >= x/2:
+            elif memo[_] > x/2 - 1: # BECAUSE WE HAVE TO GET THE NUMBER BEFORE THIS GUY BEING COUNTED TO THE memo 
                 print('a', _)
                 return _
             else:
                 memo[_] += 1
-        print('what?')
 #'''
 
 q = Solution()

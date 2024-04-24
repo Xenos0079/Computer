@@ -6,7 +6,7 @@ class TreeNode:
         self.right = right
         
 class Solution:
-    def inorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
+    def inorderTraversal(self, root: TreeNode) -> int:
         # inspired by 
         # geeksforgeeks
         answer = []
