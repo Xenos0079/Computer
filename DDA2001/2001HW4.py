@@ -1,5 +1,6 @@
 import numpy as np
 
+
 # 定义点的坐标
 points = np.array([[1.90, 0.97],
                     [1.76, 0.84],
