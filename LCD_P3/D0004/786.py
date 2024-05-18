@@ -1,5 +1,5 @@
 # 786. K-th Smallest Prime Fraction
-from sys import List
+from typing import List
 
 class Solution:
 	def kthSmallestPrimeFraction(self, arr: List[int], k: int) -> List[int]:

@@ -1,8 +1,9 @@
 # 857. Minimum Cost to Hire K Workers
 # From ChatOS
 
-import sys
+from typing import List
 import heapq
+import sys
 
 sys.float_repr_format = '{:0.5f}'.format
 

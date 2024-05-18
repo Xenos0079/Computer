@@ -1,5 +1,5 @@
 # 861. Score After Flipping Matrix
-from sys import List
+from typing import List
 
 class Solution:
     def matrixScore(self, grid: List[List[int]]) -> int:

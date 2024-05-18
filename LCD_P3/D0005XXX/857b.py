@@ -1,7 +1,7 @@
 # 857. Minimum Cost to Hire K Workers
 
 import heapq
-from sys import List
+from typing import List
 
 class Solution:
     def mincostToHireWorkers(self, quality: List[int], wage: List[int], k: int) -> float:
