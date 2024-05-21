@@ -1,4 +1,5 @@
 # 1863. Sum of All Subset XOR Totals
+# There is no D14 as D14's mission is finished by the subset program
 
 from typing import List
 
@@ -11,6 +12,7 @@ class Solution:
             curr_subset.append(nums[i])
             subsets.extend(self.backtrack(nums[i + 1 :], curr_subset))
             curr_subset.pop()        
+
         return subsets
     
     def xor_sum(self, target: List[int]) -> int:
@@ -22,6 +24,7 @@ class Solution:
             ans = 0
             for i in target:
                 ans ^= i
+
             return ans
 
     def subsetXORSum(self, nums: List[int]) -> int:
