@@ -8,7 +8,13 @@
 #include <iostream>
 using namespace std;
 
-/* Function prototypes */
+
+/*
+ * Function: raiseToPower
+ * Usage: int p = raiseToPower(n, k);
+ * ----------------------------------
+ * Returns the integer n raised to the kth power.
+ */
 
 int raiseToPower(int n, int k) {
    int result = 1;
